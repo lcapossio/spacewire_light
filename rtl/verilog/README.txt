@@ -14,6 +14,7 @@ Translated here:
  * spwxmit
  * spwrecv
  * spwrecvfront_generic
+ * spwstream, generic RX/TX path only
 
 Intentionally not translated here:
  * spwamba
@@ -28,6 +29,17 @@ The original VHDL uses package record types for link, receiver and
 transmitter buses. Verilog 2001 has no equivalent struct type, so the
 translated modules use flattened ports with names matching the original
 record fields.
+
+The VHDL top-level generics `sysfreq` and `txclkfreq` are real-valued.
+The Verilog 2001 translation uses precomputed integer parameters instead:
+`RESET_TIME`, `DISCONNECT_TIME` and `DEFAULT_DIVCNT`.
+
+Fast-mode note
+--------------
+
+The generic-clock path is available in this first pass. The `spwstream`
+wrapper currently instantiates `spwxmit` and `spwrecvfront_generic`;
+`spwxmit_fast` and `spwrecvfront_fast` remain to be translated.
 
 License
 -------
