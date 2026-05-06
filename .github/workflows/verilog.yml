@@ -27,6 +27,9 @@ jobs:
             bench/verilog/spwstream_smoke_tb.v \
             bench/verilog/spwstream_fast_smoke_tb.v \
             bench/verilog/spwstream_loopback_tb.v \
+            bench/verilog/spwlink_tb.v \
+            bench/verilog/spwlink_tb_all.v \
+            bench/verilog/streamtest_tb.v \
             rtl/verilog/syncdff.v \
             rtl/verilog/spwram.v \
             rtl/verilog/spwlink.v \
@@ -35,7 +38,8 @@ jobs:
             rtl/verilog/spwrecv.v \
             rtl/verilog/spwrecvfront_generic.v \
             rtl/verilog/spwrecvfront_fast.v \
-            rtl/verilog/spwstream.v
+            rtl/verilog/spwstream.v \
+            rtl/verilog/streamtest.v
 
       - name: Build generic stream smoke test
         run: |
@@ -88,6 +92,42 @@ jobs:
       - name: Run loopback coverage test
         run: vvp spwstream_loopback_tb.vvp
 
+      - name: Build translated spwlink test bench
+        run: |
+          iverilog -g2001 -o spwlink_tb_all.vvp \
+            bench/verilog/spwlink_tb.v \
+            bench/verilog/spwlink_tb_all.v \
+            rtl/verilog/syncdff.v \
+            rtl/verilog/spwram.v \
+            rtl/verilog/spwlink.v \
+            rtl/verilog/spwxmit.v \
+            rtl/verilog/spwxmit_fast.v \
+            rtl/verilog/spwrecv.v \
+            rtl/verilog/spwrecvfront_generic.v \
+            rtl/verilog/spwrecvfront_fast.v \
+            rtl/verilog/spwstream.v
+
+      - name: Run translated spwlink test bench
+        run: vvp spwlink_tb_all.vvp
+
+      - name: Build translated streamtest bench
+        run: |
+          iverilog -g2001 -o streamtest_tb.vvp \
+            bench/verilog/streamtest_tb.v \
+            rtl/verilog/streamtest.v \
+            rtl/verilog/syncdff.v \
+            rtl/verilog/spwram.v \
+            rtl/verilog/spwlink.v \
+            rtl/verilog/spwxmit.v \
+            rtl/verilog/spwxmit_fast.v \
+            rtl/verilog/spwrecv.v \
+            rtl/verilog/spwrecvfront_generic.v \
+            rtl/verilog/spwrecvfront_fast.v \
+            rtl/verilog/spwstream.v
+
+      - name: Run translated streamtest bench
+        run: vvp streamtest_tb.vvp
+
       - name: Run VHDL spwlink parity test
         run: |
           ghdl --clean
@@ -127,8 +167,8 @@ jobs:
 
       - name: Synthesize generic Verilog stream core
         run: |
-          yosys -p "read_verilog rtl/verilog/syncdff.v rtl/verilog/spwram.v rtl/verilog/spwlink.v rtl/verilog/spwxmit.v rtl/verilog/spwxmit_fast.v rtl/verilog/spwrecv.v rtl/verilog/spwrecvfront_generic.v rtl/verilog/spwrecvfront_fast.v rtl/verilog/spwstream.v; hierarchy -top spwstream -chparam RXIMPL 0 -chparam TXIMPL 0 -chparam RXCHUNK 1; proc; memory; opt; stat"
+          yosys -p "read_verilog rtl/verilog/syncdff.v rtl/verilog/spwram.v rtl/verilog/spwlink.v rtl/verilog/spwxmit.v rtl/verilog/spwxmit_fast.v rtl/verilog/spwrecv.v rtl/verilog/spwrecvfront_generic.v rtl/verilog/spwrecvfront_fast.v rtl/verilog/spwstream.v rtl/verilog/streamtest.v; hierarchy -top spwstream -chparam RXIMPL 0 -chparam TXIMPL 0 -chparam RXCHUNK 1; proc; memory; opt; stat"
 
       - name: Synthesize fast Verilog stream core
         run: |
-          yosys -p "read_verilog rtl/verilog/syncdff.v rtl/verilog/spwram.v rtl/verilog/spwlink.v rtl/verilog/spwxmit.v rtl/verilog/spwxmit_fast.v rtl/verilog/spwrecv.v rtl/verilog/spwrecvfront_generic.v rtl/verilog/spwrecvfront_fast.v rtl/verilog/spwstream.v; hierarchy -top spwstream -chparam RXIMPL 1 -chparam TXIMPL 1 -chparam RXCHUNK 4; proc; memory; opt; stat"
+          yosys -p "read_verilog rtl/verilog/syncdff.v rtl/verilog/spwram.v rtl/verilog/spwlink.v rtl/verilog/spwxmit.v rtl/verilog/spwxmit_fast.v rtl/verilog/spwrecv.v rtl/verilog/spwrecvfront_generic.v rtl/verilog/spwrecvfront_fast.v rtl/verilog/spwstream.v rtl/verilog/streamtest.v; hierarchy -top spwstream -chparam RXIMPL 1 -chparam TXIMPL 1 -chparam RXCHUNK 4; proc; memory; opt; stat"

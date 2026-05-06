@@ -17,6 +17,15 @@ Translated here:
  * spwrecvfront_fast
  * spwxmit_fast
  * spwstream
+ * streamtest
+
+Translated Verilog benches:
+ * spwlink_tb
+ * spwlink_tb_all
+ * spwstream_smoke_tb
+ * spwstream_fast_smoke_tb
+ * spwstream_loopback_tb
+ * streamtest_tb
 
 Intentionally not translated here:
  * spwamba
