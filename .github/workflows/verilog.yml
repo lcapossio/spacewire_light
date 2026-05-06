@@ -15,13 +15,14 @@ jobs:
       - name: Install Icarus Verilog
         run: |
           sudo apt-get update
-          sudo apt-get install -y iverilog
+          sudo apt-get install -y iverilog ghdl yosys
 
       - name: Lint Verilog 2001 RTL and benches
         run: |
           iverilog -g2001 -Wall -tnull \
             bench/verilog/spwstream_smoke_tb.v \
             bench/verilog/spwstream_fast_smoke_tb.v \
+            bench/verilog/spwstream_loopback_tb.v \
             rtl/verilog/syncdff.v \
             rtl/verilog/spwram.v \
             rtl/verilog/spwlink.v \
@@ -65,3 +66,65 @@ jobs:
 
       - name: Run fast stream smoke test
         run: vvp spwstream_fast_smoke_tb.vvp
+
+      - name: Build loopback coverage test
+        run: |
+          iverilog -g2001 -o spwstream_loopback_tb.vvp \
+            bench/verilog/spwstream_loopback_tb.v \
+            rtl/verilog/syncdff.v \
+            rtl/verilog/spwram.v \
+            rtl/verilog/spwlink.v \
+            rtl/verilog/spwxmit.v \
+            rtl/verilog/spwxmit_fast.v \
+            rtl/verilog/spwrecv.v \
+            rtl/verilog/spwrecvfront_generic.v \
+            rtl/verilog/spwrecvfront_fast.v \
+            rtl/verilog/spwstream.v
+
+      - name: Run loopback coverage test
+        run: vvp spwstream_loopback_tb.vvp
+
+      - name: Run VHDL spwlink parity test
+        run: |
+          ghdl --clean
+          ghdl -a --std=08 -fsynopsys \
+            rtl/vhdl/spwpkg.vhd \
+            rtl/vhdl/spwlink.vhd \
+            rtl/vhdl/spwrecv.vhd \
+            rtl/vhdl/spwxmit.vhd \
+            rtl/vhdl/spwxmit_fast.vhd \
+            rtl/vhdl/spwrecvfront_generic.vhd \
+            rtl/vhdl/spwrecvfront_fast.vhd \
+            rtl/vhdl/syncdff.vhd \
+            rtl/vhdl/spwram.vhd \
+            bench/vhdl/spwlink_tb.vhd \
+            bench/vhdl/spwlink_tb_all.vhd
+          ghdl -e --std=08 -fsynopsys spwlink_tb_all
+          ghdl -r --std=08 -fsynopsys spwlink_tb_all --assert-level=error
+
+      - name: Run VHDL stream parity test
+        run: |
+          ghdl --clean
+          ghdl -a --std=08 -fsynopsys \
+            rtl/vhdl/spwpkg.vhd \
+            rtl/vhdl/spwlink.vhd \
+            rtl/vhdl/spwrecv.vhd \
+            rtl/vhdl/spwxmit.vhd \
+            rtl/vhdl/spwxmit_fast.vhd \
+            rtl/vhdl/spwrecvfront_generic.vhd \
+            rtl/vhdl/spwrecvfront_fast.vhd \
+            rtl/vhdl/syncdff.vhd \
+            rtl/vhdl/spwram.vhd \
+            rtl/vhdl/spwstream.vhd \
+            rtl/vhdl/streamtest.vhd \
+            bench/vhdl/streamtest_tb.vhd
+          ghdl -e --std=08 -fsynopsys streamtest_tb
+          ghdl -r --std=08 -fsynopsys streamtest_tb --assert-level=error
+
+      - name: Synthesize generic Verilog stream core
+        run: |
+          yosys -p "read_verilog rtl/verilog/syncdff.v rtl/verilog/spwram.v rtl/verilog/spwlink.v rtl/verilog/spwxmit.v rtl/verilog/spwxmit_fast.v rtl/verilog/spwrecv.v rtl/verilog/spwrecvfront_generic.v rtl/verilog/spwrecvfront_fast.v rtl/verilog/spwstream.v; hierarchy -top spwstream -chparam RXIMPL 0 -chparam TXIMPL 0 -chparam RXCHUNK 1; proc; memory; opt; stat"
+
+      - name: Synthesize fast Verilog stream core
+        run: |
+          yosys -p "read_verilog rtl/verilog/syncdff.v rtl/verilog/spwram.v rtl/verilog/spwlink.v rtl/verilog/spwxmit.v rtl/verilog/spwxmit_fast.v rtl/verilog/spwrecv.v rtl/verilog/spwrecvfront_generic.v rtl/verilog/spwrecvfront_fast.v rtl/verilog/spwstream.v; hierarchy -top spwstream -chparam RXIMPL 1 -chparam TXIMPL 1 -chparam RXCHUNK 4; proc; memory; opt; stat"
