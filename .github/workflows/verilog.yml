@@ -1,0 +1,67 @@
+name: Verilog
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint-and-smoke:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Icarus Verilog
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y iverilog
+
+      - name: Lint Verilog 2001 RTL and benches
+        run: |
+          iverilog -g2001 -Wall -tnull \
+            bench/verilog/spwstream_smoke_tb.v \
+            bench/verilog/spwstream_fast_smoke_tb.v \
+            rtl/verilog/syncdff.v \
+            rtl/verilog/spwram.v \
+            rtl/verilog/spwlink.v \
+            rtl/verilog/spwxmit.v \
+            rtl/verilog/spwxmit_fast.v \
+            rtl/verilog/spwrecv.v \
+            rtl/verilog/spwrecvfront_generic.v \
+            rtl/verilog/spwrecvfront_fast.v \
+            rtl/verilog/spwstream.v
+
+      - name: Build generic stream smoke test
+        run: |
+          iverilog -g2001 -o spwstream_smoke_tb.vvp \
+            bench/verilog/spwstream_smoke_tb.v \
+            rtl/verilog/syncdff.v \
+            rtl/verilog/spwram.v \
+            rtl/verilog/spwlink.v \
+            rtl/verilog/spwxmit.v \
+            rtl/verilog/spwxmit_fast.v \
+            rtl/verilog/spwrecv.v \
+            rtl/verilog/spwrecvfront_generic.v \
+            rtl/verilog/spwrecvfront_fast.v \
+            rtl/verilog/spwstream.v
+
+      - name: Run generic stream smoke test
+        run: vvp spwstream_smoke_tb.vvp
+
+      - name: Build fast stream smoke test
+        run: |
+          iverilog -g2001 -o spwstream_fast_smoke_tb.vvp \
+            bench/verilog/spwstream_fast_smoke_tb.v \
+            rtl/verilog/syncdff.v \
+            rtl/verilog/spwram.v \
+            rtl/verilog/spwlink.v \
+            rtl/verilog/spwxmit.v \
+            rtl/verilog/spwxmit_fast.v \
+            rtl/verilog/spwrecv.v \
+            rtl/verilog/spwrecvfront_generic.v \
+            rtl/verilog/spwrecvfront_fast.v \
+            rtl/verilog/spwstream.v
+
+      - name: Run fast stream smoke test
+        run: vvp spwstream_fast_smoke_tb.vvp
