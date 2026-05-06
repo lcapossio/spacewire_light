@@ -39,31 +39,6 @@ module spwxmit_fast (
     wire syncsys_txflip0;
     wire syncsys_txflip1;
 
-    syncdff synctx_rst (
-        .clk(txclk), .rst(rst), .di(1'b1), .do(synctx_rstn)
-    );
-    syncdff synctx_sysflip0_sync (
-        .clk(txclk), .rst(rst), .di(sysflip0), .do(synctx_sysflip0)
-    );
-    syncdff synctx_sysflip1_sync (
-        .clk(txclk), .rst(rst), .di(sysflip1), .do(synctx_sysflip1)
-    );
-    syncdff synctx_txen_sync (
-        .clk(txclk), .rst(rst), .di(txenreg), .do(synctx_txen)
-    );
-    syncdff synctx_txdivsafe_sync (
-        .clk(txclk), .rst(rst), .di(txdivsafe), .do(synctx_txdivsafe)
-    );
-    syncdff syncsys_txflip0_sync (
-        .clk(clk), .rst(rst), .di(txflip0), .do(syncsys_txflip0)
-    );
-    syncdff syncsys_txflip1_sync (
-        .clk(clk), .rst(rst), .di(txflip1), .do(syncsys_txflip1)
-    );
-
-    assign spw_do = spwdo_r;
-    assign spw_so = spwso_r;
-
     reg txflip0;
     reg txflip1;
     reg b_update;
@@ -193,6 +168,31 @@ module spwxmit_fast (
     reg token_fctpiggy;
     reg token_flag;
     reg [7:0] token_char;
+
+    syncdff synctx_rst (
+        .clk(txclk), .rst(rst), .di(1'b1), .do(synctx_rstn)
+    );
+    syncdff synctx_sysflip0_sync (
+        .clk(txclk), .rst(rst), .di(sysflip0), .do(synctx_sysflip0)
+    );
+    syncdff synctx_sysflip1_sync (
+        .clk(txclk), .rst(rst), .di(sysflip1), .do(synctx_sysflip1)
+    );
+    syncdff synctx_txen_sync (
+        .clk(txclk), .rst(rst), .di(txenreg), .do(synctx_txen)
+    );
+    syncdff synctx_txdivsafe_sync (
+        .clk(txclk), .rst(rst), .di(txdivsafe), .do(synctx_txdivsafe)
+    );
+    syncdff syncsys_txflip0_sync (
+        .clk(clk), .rst(rst), .di(txflip0), .do(syncsys_txflip0)
+    );
+    syncdff syncsys_txflip1_sync (
+        .clk(clk), .rst(rst), .di(txflip1), .do(syncsys_txflip1)
+    );
+
+    assign spw_do = spwdo_r;
+    assign spw_so = spwso_r;
 
     always @* begin
         v_txflip0 = txflip0;
@@ -667,4 +667,3 @@ module spwxmit_fast (
     end
 
 endmodule
-
