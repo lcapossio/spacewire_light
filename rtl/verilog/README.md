@@ -36,13 +36,6 @@ The VHDL top-level generics `sysfreq` and `txclkfreq` are real-valued.
 The Verilog 2001 translation uses precomputed integer parameters instead:
 `RESET_TIME`, `DISCONNECT_TIME` and `DEFAULT_DIVCNT`.
 
-Implementation note
--------------------
-
-`spwxmit_fast.v` is a synthesized Verilog translation generated from the
-VHDL with GHDL, with ports normalized to the flattened naming convention.
-The other translated modules are hand-written Verilog 2001 translations.
-
 License
 -------
 
