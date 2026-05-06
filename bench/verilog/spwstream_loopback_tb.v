@@ -1,4 +1,8 @@
 /*
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ * Copyright (C) 2009-2013 Joris van Rantwijk
+ * Verilog translation Copyright (C) 2026 Leonardo Capossio - bard0 design
+ * Author: Leonardo Capossio - bard0 design - hello@bard0.com
  * Broader Verilog loopback test for the translated spwstream core.
  *
  * Exercises generic and fast configurations with packet data, EOP,

@@ -1,4 +1,8 @@
 /*
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ * Copyright (C) 2009-2013 Joris van Rantwijk
+ * Verilog translation Copyright (C) 2026 Leonardo Capossio - bard0 design
+ * Author: Leonardo Capossio - bard0 design - hello@bard0.com
  * Fast SpaceWire Transmitter.
  *
  * Hand-written Verilog 2001 translation of rtl/vhdl/spwxmit_fast.vhd from

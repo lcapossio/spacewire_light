@@ -39,5 +39,13 @@ The Verilog 2001 translation uses precomputed integer parameters instead:
 License
 -------
 
+The translated standalone Verilog RTL and benches carry:
+
+ * `SPDX-License-Identifier: LGPL-2.1-or-later`
+ * Original copyright: `Copyright (C) 2009-2013 Joris van Rantwijk`
+ * Translation copyright: `Copyright (C) 2026 Leonardo Capossio - bard0 design`
+
+Author: Leonardo Capossio - bard0 design - hello@bard0.com.
+
 This translation is a modified form of SpaceWire Light. Keep the original
 copyright and license terms from the repository root when distributing it.

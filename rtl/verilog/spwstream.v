@@ -1,4 +1,8 @@
 /*
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ * Copyright (C) 2009-2013 Joris van Rantwijk
+ * Verilog translation Copyright (C) 2026 Leonardo Capossio - bard0 design
+ * Author: Leonardo Capossio - bard0 design - hello@bard0.com
  * SpaceWire core with character-stream interface.
  *
  * Verilog 2001 translation of the generic RX/TX path in
