@@ -13,6 +13,8 @@ module spwstream #(
     parameter [10:0] RESET_TIME = 11'd640,
     parameter [7:0]  DISCONNECT_TIME = 8'd85,
     parameter [7:0]  DEFAULT_DIVCNT = 8'd4,
+    parameter        RXIMPL = 0,
+    parameter        TXIMPL = 0,
     parameter        RXCHUNK = 1,
     parameter        RXFIFOSIZE_BITS = 11,
     parameter        TXFIFOSIZE_BITS = 11
@@ -98,7 +100,7 @@ module spwstream #(
     wire recv_rxen;
     wire recv_inact;
     wire recv_inbvalid;
-    wire recv_inbits;
+    wire [RXCHUNK-1:0] recv_inbits;
 
     wire recvo_gotbit;
     wire recvo_gotnull;
@@ -215,7 +217,7 @@ module spwstream #(
 
     spwrecv #(
         .DISCONNECT_TIME(DISCONNECT_TIME),
-        .RXCHUNK(1)
+        .RXCHUNK(RXCHUNK)
     ) recv_inst (
         .clk(clk),
         .rxen(recv_rxen),
@@ -236,35 +238,75 @@ module spwstream #(
         .inbits(recv_inbits)
     );
 
-    spwxmit xmit_inst (
-        .clk(clk),
-        .rst(rst),
-        .divcnt(xmit_divcnt),
-        .xmiti_txen(xmiti_txen),
-        .xmiti_stnull(xmiti_stnull),
-        .xmiti_stfct(xmiti_stfct),
-        .xmiti_fct_in(xmiti_fct_in),
-        .xmiti_tick_in(xmiti_tick_in),
-        .xmiti_ctrl_in(xmiti_ctrl_in),
-        .xmiti_time_in(xmiti_time_in),
-        .xmiti_txwrite(xmiti_txwrite),
-        .xmiti_txflag(xmiti_txflag),
-        .xmiti_txdata(xmiti_txdata),
-        .xmito_fctack(xmito_fctack),
-        .xmito_txack(xmito_txack),
-        .spw_do(spw_do),
-        .spw_so(spw_so)
-    );
+    generate
+        if (TXIMPL == 0) begin : xmit_generic_gen
+            spwxmit xmit_inst (
+                .clk(clk),
+                .rst(rst),
+                .divcnt(xmit_divcnt),
+                .xmiti_txen(xmiti_txen),
+                .xmiti_stnull(xmiti_stnull),
+                .xmiti_stfct(xmiti_stfct),
+                .xmiti_fct_in(xmiti_fct_in),
+                .xmiti_tick_in(xmiti_tick_in),
+                .xmiti_ctrl_in(xmiti_ctrl_in),
+                .xmiti_time_in(xmiti_time_in),
+                .xmiti_txwrite(xmiti_txwrite),
+                .xmiti_txflag(xmiti_txflag),
+                .xmiti_txdata(xmiti_txdata),
+                .xmito_fctack(xmito_fctack),
+                .xmito_txack(xmito_txack),
+                .spw_do(spw_do),
+                .spw_so(spw_so)
+            );
+        end else begin : xmit_fast_gen
+            spwxmit_fast xmit_fast_inst (
+                .clk(clk),
+                .txclk(txclk),
+                .rst(rst),
+                .divcnt(xmit_divcnt),
+                .xmiti_txen(xmiti_txen),
+                .xmiti_stnull(xmiti_stnull),
+                .xmiti_stfct(xmiti_stfct),
+                .xmiti_fct_in(xmiti_fct_in),
+                .xmiti_tick_in(xmiti_tick_in),
+                .xmiti_ctrl_in(xmiti_ctrl_in),
+                .xmiti_time_in(xmiti_time_in),
+                .xmiti_txwrite(xmiti_txwrite),
+                .xmiti_txflag(xmiti_txflag),
+                .xmiti_txdata(xmiti_txdata),
+                .xmito_fctack(xmito_fctack),
+                .xmito_txack(xmito_txack),
+                .spw_do(spw_do),
+                .spw_so(spw_so)
+            );
+        end
 
-    spwrecvfront_generic recvfront_generic_inst (
-        .clk(clk),
-        .rxen(recv_rxen),
-        .inact(recv_inact),
-        .inbvalid(recv_inbvalid),
-        .inbits(recv_inbits),
-        .spw_di(spw_di),
-        .spw_si(spw_si)
-    );
+        if (RXIMPL == 0) begin : recvfront_generic_gen
+            spwrecvfront_generic recvfront_generic_inst (
+                .clk(clk),
+                .rxen(recv_rxen),
+                .inact(recv_inact),
+                .inbvalid(recv_inbvalid),
+                .inbits(recv_inbits[0]),
+                .spw_di(spw_di),
+                .spw_si(spw_si)
+            );
+        end else begin : recvfront_fast_gen
+            spwrecvfront_fast #(
+                .RXCHUNK(RXCHUNK)
+            ) recvfront_fast_inst (
+                .clk(clk),
+                .rxclk(rxclk),
+                .rxen(recv_rxen),
+                .inact(recv_inact),
+                .inbvalid(recv_inbvalid),
+                .inbits(recv_inbits),
+                .spw_di(spw_di),
+                .spw_si(spw_si)
+            );
+        end
+    endgenerate
 
     spwram #(
         .ABITS(RXFIFOSIZE_BITS),
@@ -458,4 +500,3 @@ module spwstream #(
     end
 
 endmodule
-

@@ -14,7 +14,9 @@ Translated here:
  * spwxmit
  * spwrecv
  * spwrecvfront_generic
- * spwstream, generic RX/TX path only
+ * spwrecvfront_fast
+ * spwxmit_fast
+ * spwstream
 
 Intentionally not translated here:
  * spwamba
@@ -34,12 +36,12 @@ The VHDL top-level generics `sysfreq` and `txclkfreq` are real-valued.
 The Verilog 2001 translation uses precomputed integer parameters instead:
 `RESET_TIME`, `DISCONNECT_TIME` and `DEFAULT_DIVCNT`.
 
-Fast-mode note
---------------
+Implementation note
+-------------------
 
-The generic-clock path is available in this first pass. The `spwstream`
-wrapper currently instantiates `spwxmit` and `spwrecvfront_generic`;
-`spwxmit_fast` and `spwrecvfront_fast` remain to be translated.
+`spwxmit_fast.v` is a synthesized Verilog translation generated from the
+VHDL with GHDL, with ports normalized to the flattened naming convention.
+The other translated modules are hand-written Verilog 2001 translations.
 
 License
 -------
