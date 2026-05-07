@@ -165,10 +165,44 @@ jobs:
           ghdl -e --std=08 -fsynopsys streamtest_tb
           ghdl -r --std=08 -fsynopsys streamtest_tb --assert-level=error
 
+      - name: Synthesize generic VHDL stream core
+        run: |
+          ghdl --clean
+          ghdl -a --std=08 -fsynopsys \
+            rtl/vhdl/spwpkg.vhd \
+            rtl/vhdl/spwlink.vhd \
+            rtl/vhdl/spwrecv.vhd \
+            rtl/vhdl/spwxmit.vhd \
+            rtl/vhdl/spwxmit_fast.vhd \
+            rtl/vhdl/spwrecvfront_generic.vhd \
+            rtl/vhdl/spwrecvfront_fast.vhd \
+            rtl/vhdl/syncdff.vhd \
+            rtl/vhdl/spwram.vhd \
+            rtl/vhdl/spwstream.vhd \
+            syn/vhdl/spwstream_synth_wrappers.vhd
+          ghdl --synth --std=08 -fsynopsys spwstream_synth_generic > spwstream_synth_generic.v
+
+      - name: Synthesize fast VHDL stream core
+        run: |
+          ghdl --clean
+          ghdl -a --std=08 -fsynopsys \
+            rtl/vhdl/spwpkg.vhd \
+            rtl/vhdl/spwlink.vhd \
+            rtl/vhdl/spwrecv.vhd \
+            rtl/vhdl/spwxmit.vhd \
+            rtl/vhdl/spwxmit_fast.vhd \
+            rtl/vhdl/spwrecvfront_generic.vhd \
+            rtl/vhdl/spwrecvfront_fast.vhd \
+            rtl/vhdl/syncdff.vhd \
+            rtl/vhdl/spwram.vhd \
+            rtl/vhdl/spwstream.vhd \
+            syn/vhdl/spwstream_synth_wrappers.vhd
+          ghdl --synth --std=08 -fsynopsys spwstream_synth_fast > spwstream_synth_fast.v
+
       - name: Synthesize generic Verilog stream core
         run: |
-          yosys -p "read_verilog rtl/verilog/syncdff.v rtl/verilog/spwram.v rtl/verilog/spwlink.v rtl/verilog/spwxmit.v rtl/verilog/spwxmit_fast.v rtl/verilog/spwrecv.v rtl/verilog/spwrecvfront_generic.v rtl/verilog/spwrecvfront_fast.v rtl/verilog/spwstream.v rtl/verilog/streamtest.v; hierarchy -top spwstream -chparam RXIMPL 0 -chparam TXIMPL 0 -chparam RXCHUNK 1; proc; memory; opt; stat"
+          yosys -p "read_verilog rtl/verilog/syncdff.v rtl/verilog/spwram.v rtl/verilog/spwlink.v rtl/verilog/spwxmit.v rtl/verilog/spwxmit_fast.v rtl/verilog/spwrecv.v rtl/verilog/spwrecvfront_generic.v rtl/verilog/spwrecvfront_fast.v rtl/verilog/spwstream.v rtl/verilog/streamtest.v; hierarchy -check -top spwstream -chparam RXIMPL 0 -chparam TXIMPL 0 -chparam RXCHUNK 1; proc; memory; opt; check; stat"
 
       - name: Synthesize fast Verilog stream core
         run: |
-          yosys -p "read_verilog rtl/verilog/syncdff.v rtl/verilog/spwram.v rtl/verilog/spwlink.v rtl/verilog/spwxmit.v rtl/verilog/spwxmit_fast.v rtl/verilog/spwrecv.v rtl/verilog/spwrecvfront_generic.v rtl/verilog/spwrecvfront_fast.v rtl/verilog/spwstream.v rtl/verilog/streamtest.v; hierarchy -top spwstream -chparam RXIMPL 1 -chparam TXIMPL 1 -chparam RXCHUNK 4; proc; memory; opt; stat"
+          yosys -p "read_verilog rtl/verilog/syncdff.v rtl/verilog/spwram.v rtl/verilog/spwlink.v rtl/verilog/spwxmit.v rtl/verilog/spwxmit_fast.v rtl/verilog/spwrecv.v rtl/verilog/spwrecvfront_generic.v rtl/verilog/spwrecvfront_fast.v rtl/verilog/spwstream.v rtl/verilog/streamtest.v; hierarchy -check -top spwstream -chparam RXIMPL 1 -chparam TXIMPL 1 -chparam RXCHUNK 4; proc; memory; opt; check; stat"
