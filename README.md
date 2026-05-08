@@ -30,10 +30,13 @@ See [doc/Manual.pdf](doc/Manual.pdf) for more information.
 
 Top-level block diagram of the `spwstream` core:
 
-![spwstream architecture](doc/architecture.svg)
+<a href="doc/architecture.svg">
+  <img src="doc/architecture.svg" alt="spwstream architecture" width="100%">
+</a>
 
-Source: [doc/architecture.json](doc/architecture.json) (regenerate via the
-`hdl-diagram` tooling).
+The editable diagram spec [`doc/architecture.json`](doc/architecture.json)
+and rendered SVG [`doc/architecture.svg`](doc/architecture.svg) were created
+with the [`hdldiagZero`](https://github.com/lcapossio/hdldiagZero) skill.
 
 ## Verilog 2001 Translation
 
