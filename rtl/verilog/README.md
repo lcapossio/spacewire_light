@@ -1,8 +1,10 @@
-SpaceWire Light Verilog 2001 RTL
+SpaceWire Light Verilog 2001 translation RTL
 =================================
 
-This directory contains an in-progress Verilog 2001 translation of the
-standalone SpaceWire Light core.
+Author: Leonardo Capossio - bard0 design - hello@bard0.com
+
+This directory contains a Verilog 2001 translation of the standalone
+SpaceWire Light core.
 
 Scope
 -----
@@ -26,6 +28,17 @@ Translated Verilog benches:
  * spwstream_fast_smoke_tb
  * spwstream_loopback_tb
  * streamtest_tb
+
+Related synthesis/regression support:
+ * `syn/vhdl/spwstream_synth_wrappers.vhd` provides matching generic and
+   fast VHDL synthesis tops for comparison against the Verilog `spwstream`
+   configurations.
+ * `scripts/synth_resource_compare.py` emits VHDL-derived Verilog netlists
+   with GHDL, synthesizes both the handwritten Verilog and VHDL-derived
+   netlists with Yosys, and prints a resource comparison table.
+ * `.github/workflows/verilog.yml` runs Verilog lint, translated Verilog
+   benches, original VHDL parity benches, and the synthesis resource
+   comparison in CI.
 
 Intentionally not translated here:
  * spwamba
