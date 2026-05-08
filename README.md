@@ -26,6 +26,15 @@ separately from <http://www.gaisler.com/>.
 
 See [doc/Manual.pdf](doc/Manual.pdf) for more information.
 
+## Architecture
+
+Top-level block diagram of the `spwstream` core (one level of hierarchy):
+
+![spwstream architecture](doc/architecture.svg)
+
+Source: [doc/architecture.json](doc/architecture.json) (regenerate via the
+`hdl-diagram` tooling).
+
 ## Verilog 2001 Translation
 
 The repository also includes a completed Verilog 2001 translation of the
