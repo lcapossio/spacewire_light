@@ -28,7 +28,7 @@ See [doc/Manual.pdf](doc/Manual.pdf) for more information.
 
 ## Architecture
 
-Top-level block diagram of the `spwstream` core (one level of hierarchy):
+Top-level block diagram of the `spwstream` core:
 
 ![spwstream architecture](doc/architecture.svg)
 
@@ -62,9 +62,11 @@ and loopback benches.
 The AMBA/LEON3/GRLIB-dependent VHDL files are intentionally not translated:
 `spwamba`, `spwambapkg`, and `spwahbmst`.
 
-CI runs Verilog lint, translated Verilog regression tests, original VHDL
-parity regression tests, and a matched synthesis resource comparison for
-generic and fast `spwstream` configurations. The synthesis comparison uses
+CI includes a dedicated VHDL workflow for standalone VHDL analysis, regression
+tests, and generic/fast `spwstream` synthesis checks. The Verilog workflow runs
+Verilog lint, translated Verilog regression tests, original VHDL parity
+regression tests, and a matched synthesis resource comparison for generic and
+fast `spwstream` configurations. The synthesis comparison uses
 [syn/vhdl/spwstream_synth_wrappers.vhd](syn/vhdl/spwstream_synth_wrappers.vhd)
 and [scripts/synth_resource_compare.py](scripts/synth_resource_compare.py).
 
@@ -96,6 +98,14 @@ You should have received a copy of the GNU Lesser General Public License along
 with the SpaceWire Light package. If not, see <http://www.gnu.org/licenses/>.
 
 ## Version History
+
+### 2026-05-08
+
+* Completed the Verilog 2001 translation of the standalone, non-GRLIB
+  SpaceWire Light RTL and test benches.
+* Added CI coverage for VHDL regression/synthesis, Verilog lint, translated
+  Verilog regression tests, original VHDL parity regression tests, and matched
+  VHDL/Verilog synthesis resource comparison.
 
 ### 2013-05-04
 
