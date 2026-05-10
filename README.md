@@ -68,8 +68,11 @@ The AMBA/LEON3/GRLIB-dependent VHDL files are intentionally not translated:
 CI includes a dedicated VHDL workflow for standalone VHDL analysis, regression
 tests, and generic/fast `spwstream` synthesis checks. The Verilog workflow runs
 Verilog lint, translated Verilog regression tests, original VHDL parity
-regression tests, and a matched synthesis resource comparison for generic and
-fast `spwstream` configurations. The synthesis comparison uses
+regression tests, a deterministic VHDL/Verilog trace-equivalence regression,
+and a matched synthesis resource comparison for generic and fast `spwstream`
+configurations. The trace comparison uses matched `streamtest_trace_tb`
+benches and [scripts/compare_vhdl_verilog_traces.py](scripts/compare_vhdl_verilog_traces.py).
+The synthesis comparison uses
 [syn/vhdl/spwstream_synth_wrappers.vhd](syn/vhdl/spwstream_synth_wrappers.vhd)
 and [scripts/synth_resource_compare.py](scripts/synth_resource_compare.py).
 
@@ -107,8 +110,9 @@ with the SpaceWire Light package. If not, see <http://www.gnu.org/licenses/>.
 * Completed the Verilog 2001 translation of the standalone, non-GRLIB
   SpaceWire Light RTL and test benches.
 * Added CI coverage for VHDL regression/synthesis, Verilog lint, translated
-  Verilog regression tests, original VHDL parity regression tests, and matched
-  VHDL/Verilog synthesis resource comparison.
+  Verilog regression tests, original VHDL parity regression tests,
+  VHDL/Verilog trace-equivalence regression, and matched VHDL/Verilog
+  synthesis resource comparison.
 
 ### 2013-05-04
 
