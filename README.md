@@ -105,7 +105,7 @@ with the SpaceWire Light package. If not, see <http://www.gnu.org/licenses/>.
 
 ## Version History
 
-### 2026-05-08
+### 2026-05-08 - Author: Leonardo Capossio
 
 * Completed the Verilog 2001 translation of the standalone, non-GRLIB
   SpaceWire Light RTL and test benches.
