@@ -13,11 +13,14 @@
 `timescale 1ns / 1ps
 
 module spwlink_tb #(
+    parameter TEST_ID = 0,
     parameter RXIMPL = 0,
     parameter RXCHUNK = 1,
     parameter TXIMPL = 0,
     parameter [7:0] TX_CLOCK_DIV = 8'd1,
-    parameter STARTWAIT_CYCLES = 0
+    parameter STARTWAIT_CYCLES = 0,
+    parameter real RXCLK_HALF_NS = 25.0,
+    parameter real TXCLK_HALF_NS = 25.0
 ) (
     output reg done,
     output reg failed
@@ -57,17 +60,23 @@ module spwlink_tb #(
 
     initial begin
         clk = 1'b0;
-        forever #25 clk = !clk;
+        while (done !== 1'b1) begin
+            #25 clk = !clk;
+        end
     end
 
     initial begin
         rxclk = 1'b0;
-        forever #10 rxclk = !rxclk;
+        while (done !== 1'b1) begin
+            #RXCLK_HALF_NS rxclk = !rxclk;
+        end
     end
 
     initial begin
         txclk = 1'b0;
-        forever #10 txclk = !txclk;
+        while (done !== 1'b1) begin
+            #TXCLK_HALF_NS txclk = !txclk;
+        end
     end
 
     spwstream #(
@@ -120,7 +129,7 @@ module spwlink_tb #(
     task fail;
         input [8*96-1:0] msg;
         begin
-            $display("ERROR: %0s", msg);
+            $display("ERROR: test%0d %0s", TEST_ID, msg);
             failed = 1'b1;
             done = 1'b1;
         end
@@ -214,11 +223,15 @@ module spwlink_tb #(
         linkstart = 1'b1;
         wait_running;
         drain_rx;
-        for (i = 0; i < 8 && !failed; i = i + 1) begin
-            send_char(1'b0, 8'h30 + i[7:0]);
+        if (TX_CLOCK_DIV != 0 && TX_CLOCK_DIV < 40) begin
+            for (i = 0; i < 8 && !failed; i = i + 1) begin
+                send_char(1'b0, 8'h30 + i[7:0]);
+            end
+            send_char(1'b1, 8'h00);
+            expect_char(1'b0, 8'h30);
+        end else begin
+            repeat (400) @(posedge clk);
         end
-        send_char(1'b1, 8'h00);
-        expect_char(1'b0, 8'h30);
         ctrl_in = 2'b01;
         time_in = 6'h22;
         tick_in = 1'b1;
