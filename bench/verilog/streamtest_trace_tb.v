@@ -28,9 +28,17 @@ module streamtest_trace_tb;
     wire spw_do;
     wire spw_so;
     integer nreceived;
+    reg [1023:0] wave_path;
 
     assign spw_di = loopback ? spw_do : 1'b0;
     assign spw_si = loopback ? spw_so : 1'b0;
+
+    initial begin
+        if ($value$plusargs("WAVE=%s", wave_path)) begin
+            $dumpfile(wave_path);
+            $dumpvars(0, streamtest_trace_tb);
+        end
+    end
 
     initial begin
         clk = 1'b0;

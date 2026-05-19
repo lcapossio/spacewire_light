@@ -69,9 +69,13 @@ CI includes a dedicated VHDL workflow for standalone VHDL analysis, regression
 tests, and generic/fast `spwstream` synthesis checks. The Verilog workflow runs
 Verilog lint, translated Verilog regression tests, original VHDL parity
 regression tests, a deterministic VHDL/Verilog trace-equivalence regression,
+an observable-signal waveform comparison for the matched `streamtest_trace_tb`,
 and a matched synthesis resource comparison for generic and fast `spwstream`
 configurations. The trace comparison uses matched `streamtest_trace_tb`
 benches and [scripts/compare_vhdl_verilog_traces.py](scripts/compare_vhdl_verilog_traces.py).
+The waveform comparison normalizes GHDL/Icarus VCD time units and signal names
+for selected top-level observables with
+[scripts/compare_vhdl_verilog_waveforms.py](scripts/compare_vhdl_verilog_waveforms.py).
 The synthesis comparison uses
 [syn/vhdl/spwstream_synth_wrappers.vhd](syn/vhdl/spwstream_synth_wrappers.vhd)
 and [scripts/synth_resource_compare.py](scripts/synth_resource_compare.py).
@@ -111,8 +115,8 @@ with the SpaceWire Light package. If not, see <http://www.gnu.org/licenses/>.
   SpaceWire Light RTL and test benches.
 * Added CI coverage for VHDL regression/synthesis, Verilog lint, translated
   Verilog regression tests, original VHDL parity regression tests,
-  VHDL/Verilog trace-equivalence regression, and matched VHDL/Verilog
-  synthesis resource comparison.
+  VHDL/Verilog trace-equivalence and observable waveform regressions, and
+  matched VHDL/Verilog synthesis resource comparison.
 
 ### 2013-05-04
 

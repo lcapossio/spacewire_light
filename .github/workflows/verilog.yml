@@ -132,6 +132,9 @@ jobs:
       - name: Compare VHDL and Verilog stream traces
         run: python3 scripts/compare_vhdl_verilog_traces.py
 
+      - name: Compare VHDL and Verilog stream waveforms
+        run: python3 scripts/compare_vhdl_verilog_waveforms.py
+
       - name: Run VHDL spwlink parity test
         run: |
           ghdl --clean
