@@ -117,6 +117,11 @@ with the SpaceWire Light package. If not, see <http://www.gnu.org/licenses/>.
   Verilog regression tests, original VHDL parity regression tests,
   VHDL/Verilog trace-equivalence and observable waveform regressions, and
   matched VHDL/Verilog synthesis resource comparison.
+* Added an explicit `spwlink` parity manifest. The Verilog `spwlink_tb_all`
+  mirrors the original VHDL 23-case configuration sweep, but the per-case
+  Verilog bench is still a lightweight self-loopback bench. Full
+  stimulus-isomorphic translation of `bench/vhdl/spwlink_tb.vhd` remains the
+  tracked open item before claiming finished `spwlink` testbench equivalence.
 
 ### 2013-05-04
 

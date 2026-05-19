@@ -14,7 +14,29 @@ from pathlib import Path
 
 ROOT = Path.cwd()
 MANIFEST = ROOT / "parity" / "spwlink_manifest.yml"
+VHDL_TB = ROOT / "bench" / "vhdl" / "spwlink_tb.vhd"
+VERILOG_TB = ROOT / "bench" / "verilog" / "spwlink_tb.v"
 VERILOG_TB_ALL = ROOT / "bench" / "verilog" / "spwlink_tb_all.v"
+
+STIMULUS_MARKERS = {
+    "reset_idle_assertions": ("Test 1: Reset", "reset"),
+    "started_null_generation": ("Test 4: Start link", "NULL"),
+    "started_timeout": ("Test 5: Timeout in Started state", "started_timeout"),
+    "connecting_fct_generation": ("Test 6: Start link; simulate NULL pattern", "FCT"),
+    "connecting_timeout": ("Test 7: Timeout in Connecting state", "connecting_timeout"),
+    "autostart_to_run": ("Test 8: Autostart link", "autostart"),
+    "link_disable": ("Test 8: Autostart link", "link disable"),
+    "running_disconnect_error": ("Test 9: Start link until Run state", "errdisc"),
+    "junk_signal_filtering": ("Test 10: Junk signal before starting link", "junk signal"),
+    "unexpected_eop_reset": ("Test 11: Incoming EOP before first FCT", "unexpected EOP"),
+    "timecode_and_data_receive": ("Test 12: Send and receive characters", "TimeCode"),
+    "double_escape_error": ("Test 12: Send and receive characters", "erresc"),
+    "eop_eep_receive": ("Test 13: Send and receive EOP, EEP", "eop, eep"),
+    "credit_error": ("Test 13: Send and receive EOP, EEP", "errcred"),
+    "parity_error": ("Test 14: Abort on parity error", "errpar"),
+    "inverted_strobe_start": ("Test 15: start with wrong strobe polarity", "weird_strobe"),
+    "data_strobe_both_high": ("Test 16: start with wrong data polarity", "weird_data"),
+}
 
 
 def scalar(value: str) -> str:
@@ -67,6 +89,8 @@ def verilog_cases(text: str) -> list[tuple[str, str, str, str, str]]:
 
 def main() -> int:
     manifest = MANIFEST.read_text()
+    vhdl_tb = VHDL_TB.read_text()
+    verilog_tb = VERILOG_TB.read_text()
     tb_all = VERILOG_TB_ALL.read_text()
     expected = manifest_cases(manifest)
     actual = verilog_cases(tb_all)
@@ -78,41 +102,48 @@ def main() -> int:
         print(f"expected {len(expected)} cases: {expected}", file=sys.stderr)
         print(f"actual   {len(actual)} cases: {actual}", file=sys.stderr)
 
-    required_markers = [
-        "reset_idle_assertions",
-        "started_null_generation",
-        "started_timeout",
-        "connecting_fct_generation",
-        "connecting_timeout",
-        "autostart_to_run",
-        "link_disable",
-        "running_disconnect_error",
-        "junk_signal_filtering",
-        "unexpected_eop_reset",
-        "timecode_and_data_receive",
-        "double_escape_error",
-        "eop_eep_receive",
-        "credit_error",
-        "parity_error",
-        "inverted_strobe_start",
-        "data_strobe_both_high",
-    ]
+    required_markers = list(STIMULUS_MARKERS)
     missing = [marker for marker in required_markers if marker not in manifest]
     if missing:
         ok = False
         print(f"ERROR: manifest missing stimulus markers: {missing}", file=sys.stderr)
 
+    missing_vhdl_anchors = [
+        marker
+        for marker, anchors in STIMULUS_MARKERS.items()
+        if not any(anchor in vhdl_tb for anchor in anchors)
+    ]
+    if missing_vhdl_anchors:
+        ok = False
+        print(
+            f"ERROR: VHDL spwlink bench no longer contains anchors for: {missing_vhdl_anchors}",
+            file=sys.stderr,
+        )
+
     waiver_present = "verilog_spwlink_lightweight_stimulus" in manifest
+    lightweight_note_present = "self-loopback checks suitable for Icarus Verilog CI" in verilog_tb
     if not waiver_present:
         ok = False
         print("ERROR: missing waiver for non-stimulus-isomorphic Verilog bench", file=sys.stderr)
+    if lightweight_note_present and not waiver_present:
+        ok = False
+        print("ERROR: lightweight Verilog bench still needs the stimulus-isomorphism waiver", file=sys.stderr)
+    if waiver_present and not lightweight_note_present:
+        ok = False
+        print(
+            "ERROR: waiver is still present, but the Verilog bench no longer declares itself lightweight",
+            file=sys.stderr,
+        )
 
     if not ok:
         return 1
 
     print(f"PASS: spwlink parity manifest matches Verilog {len(actual)}-case configuration sweep")
     if waiver_present:
-        print("NOTE: spwlink stimulus equivalence is still waived; full VHDL stimulus translation remains open")
+        print(
+            "NOTE: spwlink stimulus equivalence is still waived; "
+            f"{len(STIMULUS_MARKERS)} VHDL stimulus obligations remain tracked"
+        )
     return 0
 
 
