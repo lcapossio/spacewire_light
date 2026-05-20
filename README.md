@@ -80,6 +80,16 @@ The synthesis comparison uses
 [syn/vhdl/spwstream_synth_wrappers.vhd](syn/vhdl/spwstream_synth_wrappers.vhd)
 and [scripts/synth_resource_compare.py](scripts/synth_resource_compare.py).
 
+Run the local HDL lint pass with:
+
+```sh
+python scripts/lint_hdl.py
+```
+
+This requires Icarus Verilog, GHDL, and Yosys. The Yosys phase runs structural
+`check -assert` passes to catch issues such as multi-driven Verilog nets.
+Use `--skip-yosys` only on machines without Yosys; CI runs the full check.
+
 See [rtl/verilog/README.md](rtl/verilog/README.md) for Verilog-specific notes.
 
 ## License

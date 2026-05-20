@@ -16,31 +16,13 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Install Icarus Verilog
+      - name: Install HDL tools
         run: |
           sudo apt-get update
           sudo apt-get install -y iverilog ghdl yosys
 
-      - name: Lint Verilog 2001 RTL and benches
-        run: |
-          iverilog -g2001 -Wall -tnull \
-            bench/verilog/spwstream_smoke_tb.v \
-            bench/verilog/spwstream_fast_smoke_tb.v \
-            bench/verilog/spwstream_loopback_tb.v \
-            bench/verilog/spwlink_tb.v \
-            bench/verilog/spwlink_tb_all.v \
-            bench/verilog/streamtest_tb.v \
-            bench/verilog/streamtest_trace_tb.v \
-            rtl/verilog/syncdff.v \
-            rtl/verilog/spwram.v \
-            rtl/verilog/spwlink.v \
-            rtl/verilog/spwxmit.v \
-            rtl/verilog/spwxmit_fast.v \
-            rtl/verilog/spwrecv.v \
-            rtl/verilog/spwrecvfront_generic.v \
-            rtl/verilog/spwrecvfront_fast.v \
-            rtl/verilog/spwstream.v \
-            rtl/verilog/streamtest.v
+      - name: Lint Verilog and VHDL sources
+        run: python3 scripts/lint_hdl.py
 
       - name: Build generic stream smoke test
         run: |
