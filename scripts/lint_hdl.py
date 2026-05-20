@@ -72,7 +72,7 @@ YOSYS_TOPS = [
     YosysTop(
         "streamtest fast",
         "streamtest",
-        (("rximpl", "1"), ("tximpl", "1"), ("rxchunk", "4")),
+        (("RXIMPL", "1"), ("TXIMPL", "1"), ("RXCHUNK", "4")),
     ),
 ]
 

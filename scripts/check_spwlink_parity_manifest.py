@@ -108,6 +108,16 @@ def main() -> int:
         ok = False
         print(f"ERROR: manifest missing stimulus markers: {missing}", file=sys.stderr)
 
+    missing_verilog_markers = [
+        marker for marker in required_markers if marker not in verilog_tb
+    ]
+    if missing_verilog_markers:
+        ok = False
+        print(
+            f"ERROR: Verilog spwlink bench missing stimulus markers: {missing_verilog_markers}",
+            file=sys.stderr,
+        )
+
     missing_vhdl_anchors = [
         marker
         for marker, anchors in STIMULUS_MARKERS.items()
@@ -120,30 +130,26 @@ def main() -> int:
             file=sys.stderr,
         )
 
-    waiver_present = "verilog_spwlink_lightweight_stimulus" in manifest
-    lightweight_note_present = "self-loopback checks suitable for Icarus Verilog CI" in verilog_tb
-    if not waiver_present:
+    if "status: complete" not in manifest:
         ok = False
-        print("ERROR: missing waiver for non-stimulus-isomorphic Verilog bench", file=sys.stderr)
-    if lightweight_note_present and not waiver_present:
+        print("ERROR: spwlink manifest must be marked complete", file=sys.stderr)
+    if "class: stimulus-isomorphic" not in manifest:
         ok = False
-        print("ERROR: lightweight Verilog bench still needs the stimulus-isomorphism waiver", file=sys.stderr)
-    if waiver_present and not lightweight_note_present:
+        print("ERROR: spwlink bench classification must be stimulus-isomorphic", file=sys.stderr)
+    if "verilog_spwlink_lightweight_stimulus" in manifest:
         ok = False
-        print(
-            "ERROR: waiver is still present, but the Verilog bench no longer declares itself lightweight",
-            file=sys.stderr,
-        )
+        print("ERROR: obsolete lightweight-stimulus waiver is still present", file=sys.stderr)
+    if "self-loopback checks suitable for Icarus Verilog CI" in verilog_tb:
+        ok = False
+        print("ERROR: Verilog spwlink bench still declares lightweight self-loopback status", file=sys.stderr)
 
     if not ok:
         return 1
 
-    print(f"PASS: spwlink parity manifest matches Verilog {len(actual)}-case configuration sweep")
-    if waiver_present:
-        print(
-            "NOTE: spwlink stimulus equivalence is still waived; "
-            f"{len(STIMULUS_MARKERS)} VHDL stimulus obligations remain tracked"
-        )
+    print(
+        "PASS: spwlink parity manifest matches Verilog "
+        f"{len(actual)}-case stimulus-isomorphic configuration sweep"
+    )
     return 0
 
 

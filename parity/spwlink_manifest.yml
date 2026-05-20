@@ -1,6 +1,6 @@
 version: 1
 name: spwlink_translation_parity
-status: in_progress
+status: complete
 
 golden:
   language: vhdl
@@ -38,12 +38,11 @@ candidate:
 
 bench_classification:
   spwlink_tb_all:
-    class: configuration-isomorphic
+    class: stimulus-isomorphic
     note: >
       The Verilog wrapper mirrors the VHDL 23-case implementation/configuration
-      sweep. The per-case Verilog bench is still a lightweight self-loopback
-      bench, not yet stimulus-isomorphic with the VHDL bit-pattern stimulus and
-      monitor.
+      sweep. The per-case Verilog bench translates the VHDL bit-pattern
+      stimulus generator, output monitor, and state/error assertions.
 
 configuration_matrix:
   columns: [case, rximpl, rxchunk, tximpl, tx_clock_div, rx_clock_freq_mhz, tx_clock_freq_mhz]
@@ -73,7 +72,7 @@ configuration_matrix:
     - [23, fast,    4, fast,    1, 43.0, 77.5]
 
 stimulus_contract:
-  required_for_finished_equivalence:
+  implemented:
     - reset_idle_assertions
     - started_null_generation
     - started_timeout
@@ -137,11 +136,3 @@ functional_coverage:
   crosses:
     - name: implementation_matrix
       points: [rx_implementation, rxchunk, tx_implementation]
-
-waivers:
-  - id: verilog_spwlink_lightweight_stimulus
-    applies_to: candidate
-    reason: >
-      Current Verilog spwlink_tb does not yet implement the full VHDL
-      bit-pattern stimulus generator and monitor. Until that is translated,
-      spwlink_tb_all is configuration-isomorphic but not stimulus-isomorphic.

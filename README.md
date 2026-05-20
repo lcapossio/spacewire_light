@@ -60,7 +60,9 @@ Translated standalone RTL modules:
 
 Translated Verilog benches are in [bench/verilog](bench/verilog), including
 `spwlink_tb`, `spwlink_tb_all`, `streamtest_tb`, and the `spwstream` smoke
-and loopback benches.
+and loopback benches. The `spwlink` bench is stimulus-isomorphic with the
+original VHDL bench across the 23-case implementation/configuration sweep
+tracked by [parity/spwlink_manifest.yml](parity/spwlink_manifest.yml).
 
 The AMBA/LEON3/GRLIB-dependent VHDL files are intentionally not translated:
 `spwamba`, `spwambapkg`, and `spwahbmst`.
@@ -127,11 +129,10 @@ with the SpaceWire Light package. If not, see <http://www.gnu.org/licenses/>.
   Verilog regression tests, original VHDL parity regression tests,
   VHDL/Verilog trace-equivalence and observable waveform regressions, and
   matched VHDL/Verilog synthesis resource comparison.
-* Added an explicit `spwlink` parity manifest. The Verilog `spwlink_tb_all`
-  mirrors the original VHDL 23-case configuration sweep, but the per-case
-  Verilog bench is still a lightweight self-loopback bench. Full
-  stimulus-isomorphic translation of `bench/vhdl/spwlink_tb.vhd` remains the
-  tracked open item before claiming finished `spwlink` testbench equivalence.
+* Completed stimulus-isomorphic `spwlink` testbench parity. The Verilog
+  `spwlink_tb_all` mirrors the original VHDL 23-case configuration sweep, and
+  `bench/verilog/spwlink_tb.v` translates the VHDL bit-pattern stimulus,
+  output monitor, and state/error assertions tracked by the parity manifest.
 
 ### 2013-05-04
 
