@@ -162,14 +162,8 @@ def yosys_check(top: YosysTop) -> None:
     run(["yosys", "-q", "-"], input_text="\n".join(commands) + "\n")
 
 
-def main() -> int:
-    skip_yosys = "--skip-yosys" in sys.argv[1:]
-    unknown = [arg for arg in sys.argv[1:] if arg != "--skip-yosys"]
-    if unknown:
-        raise SystemExit(f"ERROR: unknown arguments: {' '.join(unknown)}")
-
+def lint_verilog(*, skip_yosys: bool) -> None:
     require_tool("iverilog")
-    require_tool("ghdl")
     if not skip_yosys:
         require_tool("yosys")
 
@@ -181,6 +175,10 @@ def main() -> int:
     else:
         for top in YOSYS_TOPS:
             yosys_check(top)
+
+
+def lint_vhdl() -> None:
+    require_tool("ghdl")
 
     for label, sources in VHDL_GROUPS:
         ghdl_analyze(label, sources)
@@ -198,6 +196,27 @@ def main() -> int:
     )
 
     ghdl_clean()
+
+
+def main() -> int:
+    args = sys.argv[1:]
+    skip_yosys = "--skip-yosys" in args
+    verilog_only = "--verilog" in args
+    vhdl_only = "--vhdl" in args
+    unknown = [
+        arg for arg in args if arg not in {"--skip-yosys", "--verilog", "--vhdl"}
+    ]
+    if unknown:
+        raise SystemExit(f"ERROR: unknown arguments: {' '.join(unknown)}")
+    if verilog_only and vhdl_only:
+        raise SystemExit("ERROR: choose at most one of --verilog or --vhdl")
+    if skip_yosys and vhdl_only:
+        raise SystemExit("ERROR: --skip-yosys only applies to Verilog lint")
+
+    if not vhdl_only:
+        lint_verilog(skip_yosys=skip_yosys)
+    if not verilog_only:
+        lint_vhdl()
     print("\nPASS: HDL lint completed")
     return 0
 

@@ -67,10 +67,10 @@ tracked by [parity/spwlink_manifest.yml](parity/spwlink_manifest.yml).
 The AMBA/LEON3/GRLIB-dependent VHDL files are intentionally not translated:
 `spwamba`, `spwambapkg`, and `spwahbmst`.
 
-CI includes a dedicated VHDL workflow for standalone VHDL analysis, regression
-tests, and generic/fast `spwstream` synthesis checks. The Verilog workflow runs
-Verilog lint, translated Verilog regression tests, original VHDL parity
-regression tests, a deterministic VHDL/Verilog trace-equivalence regression,
+CI includes a dedicated VHDL workflow for VHDL lint, regression tests, and
+generic/fast `spwstream` synthesis checks. The Verilog workflow runs Verilog
+lint, translated Verilog regression tests, original VHDL parity regression
+tests, a deterministic VHDL/Verilog trace-equivalence regression,
 an observable-signal waveform comparison for the matched `streamtest_trace_tb`,
 and a matched synthesis resource comparison for generic and fast `spwstream`
 configurations. The trace comparison uses matched `streamtest_trace_tb`
@@ -82,15 +82,17 @@ The synthesis comparison uses
 [syn/vhdl/spwstream_synth_wrappers.vhd](syn/vhdl/spwstream_synth_wrappers.vhd)
 and [scripts/synth_resource_compare.py](scripts/synth_resource_compare.py).
 
-Run the local HDL lint pass with:
+Run the local HDL lint passes with:
 
 ```sh
-python scripts/lint_hdl.py
+python scripts/lint_hdl.py --verilog
+python scripts/lint_hdl.py --vhdl
 ```
 
-This requires Icarus Verilog, GHDL, and Yosys. The Yosys phase runs structural
-`check -assert` passes to catch issues such as multi-driven Verilog nets.
-Use `--skip-yosys` only on machines without Yosys; CI runs the full check.
+Verilog lint requires Icarus Verilog and Yosys; VHDL lint requires GHDL. The
+Yosys phase runs structural `check -assert` passes to catch issues such as
+multi-driven Verilog nets. Use `--skip-yosys` only on machines without Yosys;
+CI runs the full Verilog check.
 
 See [rtl/verilog/README.md](rtl/verilog/README.md) for Verilog-specific notes.
 

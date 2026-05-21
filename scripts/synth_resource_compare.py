@@ -50,9 +50,20 @@ def run(cmd: list[str], cwd: Path = ROOT, stdout: int | None = None) -> None:
     subprocess.run(cmd, cwd=cwd, stdout=stdout, check=True)
 
 
-def run_capture(cmd: list[str], cwd: Path = ROOT) -> str:
+def run_capture(cmd: list[str], cwd: Path = ROOT, input_text: str | None = None) -> str:
     print("+ " + " ".join(cmd), flush=True)
-    return subprocess.check_output(cmd, cwd=cwd, text=True, stderr=subprocess.STDOUT)
+    try:
+        return subprocess.check_output(
+            cmd,
+            cwd=cwd,
+            input=input_text,
+            text=True,
+            stderr=subprocess.STDOUT,
+        )
+    except subprocess.CalledProcessError as err:
+        if err.output:
+            print(err.output, end="")
+        raise
 
 
 def ghdl_analyze() -> None:
@@ -69,8 +80,8 @@ def emit_vhdl_netlist(entity: str, path: Path) -> None:
 
 
 def yosys_stats(name: str, commands: list[str], stats_path: Path) -> dict[str, object]:
-    script = "; ".join([*commands, f"tee -o {stats_path.as_posix()} stat -json"])
-    run_capture(["yosys", "-p", script])
+    script = "\n".join([*commands, f"tee -o {stats_path.as_posix()} stat -json"])
+    run_capture(["yosys", "-q", "-"], input_text=script + "\n")
     data = json.loads(stats_path.read_text(encoding="utf-8"))
     modules = data.get("modules", {})
     if not modules:
@@ -143,7 +154,7 @@ def markdown_table(results: dict[str, dict[str, object]]) -> str:
 
 
 def main() -> int:
-    with tempfile.TemporaryDirectory(prefix="spw_synth_") as tmp:
+    with tempfile.TemporaryDirectory(prefix=".spw_synth_", dir=ROOT) as tmp:
         tmpdir = Path(tmp)
         ghdl_analyze()
         generic_netlist = tmpdir / "spwstream_synth_generic.v"

@@ -21,21 +21,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ghdl
 
-      - name: Analyze standalone VHDL RTL
-        run: |
-          ghdl --clean
-          ghdl -a --std=08 -fsynopsys \
-            rtl/vhdl/spwpkg.vhd \
-            rtl/vhdl/spwlink.vhd \
-            rtl/vhdl/spwrecv.vhd \
-            rtl/vhdl/spwxmit.vhd \
-            rtl/vhdl/spwxmit_fast.vhd \
-            rtl/vhdl/spwrecvfront_generic.vhd \
-            rtl/vhdl/spwrecvfront_fast.vhd \
-            rtl/vhdl/syncdff.vhd \
-            rtl/vhdl/spwram.vhd \
-            rtl/vhdl/spwstream.vhd \
-            rtl/vhdl/streamtest.vhd
+      - name: Lint VHDL sources
+        run: python3 scripts/lint_hdl.py --vhdl
 
       - name: Run VHDL spwlink regression
         run: |
