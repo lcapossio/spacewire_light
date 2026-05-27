@@ -1,0 +1,5 @@
+.wavecmp_tmp/
+__pycache__/
+*.vcd
+*.vvp
+work-obj*.cf
