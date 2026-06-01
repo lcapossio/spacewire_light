@@ -81,6 +81,8 @@ for selected top-level observables with
 The synthesis comparison uses
 [syn/vhdl/spwstream_synth_wrappers.vhd](syn/vhdl/spwstream_synth_wrappers.vhd)
 and [scripts/synth_resource_compare.py](scripts/synth_resource_compare.py).
+Additional translateHDL formal parity manifests and the current evidence packet
+are tracked under [parity/formal](parity/formal).
 
 Run the local HDL lint passes with:
 
